@@ -1,8 +1,7 @@
 #!/usr/bin/env -S python3 -u
 
-# This file serves as a parallel driver (https://antithesis.com/docs/test_templates/test_composer_reference/#parallel-driver). 
-# It does between 1 and 100 random kv puts against a random etcd host in the cluster. We then check to see if successful puts persisted
-# and are correct on another random etcd host.
+# This file serves as a anytime test that serves to validate that whenever a the KVStore is updated
+# the revision number should always increase.
 
 # Antithesis SDK
 from antithesis.assertions import (
@@ -17,14 +16,14 @@ import helper_revision_increase as helper
 
 def generate_put_request(key):
     """
-        This function will first connect to an etcd host, then execute a certain number of put requests. 
-        The key and value for each put request are generated using Antithesis randomness (check within the helper.py file). 
-        We return the key/value pairs from successful requests.
+        This function will connect to a random etcd host and update a key's value with a random string
+        value. It returns the value and boolean indicating whether or not the put was successful.
     """
     
     # Generate random string for key
     value = helper.generate_random_string()
 
+    # Connect to host
     client = helper.connect_to_host()
 
     # Response of the put request
@@ -44,9 +43,10 @@ def generate_put_request(key):
 
 def get_revision_from_get_request(key, value):
     """
-        This function will first connect to an etcd host, then perform a get request on each key in the key/value array. 
-        For each successful response, we check that the get request value == value from the key/value array. 
-        If we ever find a mismatch, we return it. 
+        This function will connect to a random etcd host and make a get request on the input key.
+        If the get request is successful and the value matches the value of the previous get request
+        the funtion will return a boolean indicating that we should proceed. Of note, it also returns
+        the revision number of the table from the get request's metadata.
     """
     client = helper.connect_to_host()
 
@@ -76,6 +76,8 @@ if __name__ == "__main__":
     # Generate random string for key
     key = helper.generate_random_string()
 
+    # As the function proceeds through each step, if the boolean returned is true, it 
+    # will continue to the next step.
     first_put_success, original_value = generate_put_request(key)
     if first_put_success:
         first_get_success, first_revision = get_revision_from_get_request(key, original_value)
