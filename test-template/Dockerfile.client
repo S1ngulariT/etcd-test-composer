@@ -53,6 +53,12 @@ COPY ./python-generate-traffic/parallel_driver_generate_traffic.py /opt/antithes
 # Copying additional resources into a resources folder
 COPY ./python-generate-traffic/resources/helper.py /opt/antithesis/resources/helper.py
 
+# Copying python executable into Test Composer directory
+COPY ./python-revision-increase/anytime_revision_increase.py /opt/antithesis/test/v1/main/anytime_revision_increase.py
+
+# Copying additional resources into a resources folder
+COPY ./python-revision-increase/resources/helper_revision_increase.py /opt/antithesis/resources/helper_revision_increase.py
+
 
 # GO:
 
