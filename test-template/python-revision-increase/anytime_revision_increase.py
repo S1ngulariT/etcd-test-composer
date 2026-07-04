@@ -16,8 +16,8 @@ import helper_revision_increase as helper
 
 def generate_put_request(key):
     """
-        This function will connect to a random etcd host and update a key's value with a random string
-        value. It returns the value and boolean indicating whether or not the put was successful.
+        This function will connect to a random etcd host and update the key's value with a random string
+        value. It returns the value and a boolean indicating whether or not the put was successful.
     """
     
     # Generate random string for key
@@ -30,7 +30,7 @@ def generate_put_request(key):
     success, error = helper.put_request(client, key, value)
 
     # Antithesis Assertion: sometimes put requests are successful. A failed request is OK since we expect them to happen.
-    sometimes(success, "Client can make successful put requests", {"error":error})
+    sometimes(success, "Client made successful put request", {"error":error})
 
     if not success:
         print(f"Client: unsuccessful put with key '{key}', value '{value}', and error '{error}'")
@@ -44,8 +44,8 @@ def generate_put_request(key):
 def get_revision_from_get_request(key, value):
     """
         This function will connect to a random etcd host and make a get request on the input key.
-        If the get request is successful and the value matches the value of the previous get request
-        the funtion will return a boolean indicating that we should proceed. Of note, it also returns
+        If the get request is successful and the value matches the value of the previous get request,
+        the funtion will return a boolean indicating that we should proceed. It also returns
         the revision number of the table from the get request's metadata.
     """
     client = helper.connect_to_host()
@@ -53,7 +53,7 @@ def get_revision_from_get_request(key, value):
     success, error, database_value, revision = helper.get_request(client, key)
 
     # Antithesis Assertion: sometimes get requests are successful. A failed request is OK since we expect them to happen.
-    sometimes(success, "Client can make successful get requests", {"error": error})
+    sometimes(success, "Client made successful get request", {"error": error})
 
     if not success: 
         print(f"Client: unsuccessful get with key '{key}', and error '{error}'")
@@ -92,7 +92,7 @@ if __name__ == "__main__":
         # the KVStore
         always(
             second_revision > first_revision, 
-            "Revision number was succesfully updated!", 
+            "Revision number was succesfully updated!",
             {
                 "key": key,
                 "first_revision": first_revision,
